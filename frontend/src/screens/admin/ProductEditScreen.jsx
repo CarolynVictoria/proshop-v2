@@ -125,7 +125,6 @@ const ProductEditScreen = () => {
 							></Form.Control>
 						</Form.Group>
 
-						{/* IMAGE INPUT PLACEHOLDER */}
 						<Form.Group controlId='image' className='my-3'>
 							<Form.Label>Image</Form.Label>
 							<Form.Control
@@ -140,6 +139,7 @@ const ProductEditScreen = () => {
 								onChange={uploadFileHandler}
 							></Form.Control>
 						</Form.Group>
+						{ loadingUpload && <Loader />}
 
 						<Form.Group controlId='brand' className='my-3'>
 							<Form.Label>Brand</Form.Label>
