@@ -102,7 +102,7 @@ const ProductEditScreen = () => {
 				{isLoading ? (
 					<Loader />
 				) : error ? (
-					<Message variant='danger'>{error}</Message>
+					<Message variant='danger'>{error?.data?.message}</Message>
 				) : (
 					<Form onSubmit={submitHandler}>
 						<Form.Group controlId='name' className='my-3'>
@@ -139,7 +139,7 @@ const ProductEditScreen = () => {
 								onChange={uploadFileHandler}
 							></Form.Control>
 						</Form.Group>
-						{ loadingUpload && <Loader />}
+						{loadingUpload && <Loader />}
 
 						<Form.Group controlId='brand' className='my-3'>
 							<Form.Label>Brand</Form.Label>
