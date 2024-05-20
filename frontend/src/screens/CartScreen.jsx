@@ -17,15 +17,16 @@ const CartScreen = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	// get cart state from redux
 	const cart = useSelector((state) => state.cart);
 	const { cartItems } = cart;
 
-	const addToCartHandler = async (product, qty) => {
+	// NOTE: no need for an async function here as we are not awaiting the
+	// resolution of a Promise
+	const addToCartHandler = (product, qty) => {
 		dispatch(addToCart({ ...product, qty }));
 	};
 
-	const removeFromCartHandler = async (id) => {
+	const removeFromCartHandler = (id) => {
 		dispatch(removeFromCart(id));
 	};
 
@@ -74,7 +75,7 @@ const CartScreen = () => {
 											variant='light'
 											onClick={() => removeFromCartHandler(item._id)}
 										>
-											<FaTrash />'
+											<FaTrash />
 										</Button>
 									</Col>
 								</Row>
@@ -112,4 +113,5 @@ const CartScreen = () => {
 		</Row>
 	);
 };
+
 export default CartScreen;

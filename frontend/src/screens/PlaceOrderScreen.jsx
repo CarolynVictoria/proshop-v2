@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
-import { useSelector, useDispatch } from 'react-redux';
-import CheckoutSteps from '../components/CheckoutSteps';
+import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
+import CheckoutSteps from '../components/CheckoutSteps';
 import Loader from '../components/Loader';
 import { useCreateOrderMutation } from '../slices/ordersApiSlice';
 import { clearCartItems } from '../slices/cartSlice';
@@ -52,17 +52,19 @@ const PlaceOrderScreen = () => {
 						<ListGroup.Item>
 							<h2>Shipping</h2>
 							<p>
-								<strong>Address: </strong>
-								{cart.shippingAddress.address}, {cart.shippingAddress.city},{' '}
+								<strong>Address:</strong>
+								{cart.shippingAddress.address}, {cart.shippingAddress.city}{' '}
 								{cart.shippingAddress.postalCode},{' '}
 								{cart.shippingAddress.country}
 							</p>
 						</ListGroup.Item>
+
 						<ListGroup.Item>
 							<h2>Payment Method</h2>
 							<strong>Method: </strong>
 							{cart.paymentMethod}
 						</ListGroup.Item>
+
 						<ListGroup.Item>
 							<h2>Order Items</h2>
 							{cart.cartItems.length === 0 ? (
@@ -127,7 +129,6 @@ const PlaceOrderScreen = () => {
 									<Col>${cart.totalPrice}</Col>
 								</Row>
 							</ListGroup.Item>
-
 							<ListGroup.Item>
 								{error && (
 									<Message variant='danger'>{error.data.message}</Message>
@@ -151,4 +152,5 @@ const PlaceOrderScreen = () => {
 		</>
 	);
 };
+
 export default PlaceOrderScreen;

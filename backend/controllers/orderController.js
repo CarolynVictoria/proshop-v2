@@ -4,7 +4,7 @@ import Product from '../models/productModel.js';
 import { calcPrices } from '../utils/calcPrices.js';
 import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
 
-// @desc    create new order
+// @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
@@ -14,6 +14,11 @@ const addOrderItems = asyncHandler(async (req, res) => {
 		res.status(400);
 		throw new Error('No order items');
 	} else {
+		// NOTE: here we must assume that the prices from our client are incorrect.
+		// We must only trust the price of the item as it exists in
+		// our DB. This prevents a user paying whatever they want by hacking our client
+		// side code - https://gist.github.com/bushblade/725780e6043eaf59415fbaf6ca7376ff
+
 		// get the ordered items from our database
 		const itemsFromDB = await Product.find({
 			_id: { $in: orderItems.map((x) => x._id) },
@@ -53,12 +58,12 @@ const addOrderItems = asyncHandler(async (req, res) => {
 	}
 });
 
-// @desc    Get logged-in user's orders
+// @desc    Get logged in user orders
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
 	const orders = await Order.find({ user: req.user._id });
-	res.status(200).json(orders);
+	res.json(orders);
 });
 
 // @desc    Get order by ID
@@ -71,7 +76,7 @@ const getOrderById = asyncHandler(async (req, res) => {
 	);
 
 	if (order) {
-		res.status(200).json(order);
+		res.json(order);
 	} else {
 		res.status(404);
 		throw new Error('Order not found');
@@ -82,6 +87,8 @@ const getOrderById = asyncHandler(async (req, res) => {
 // @route   PUT /api/orders/:id/pay
 // @access  Private
 const updateOrderToPaid = asyncHandler(async (req, res) => {
+	// NOTE: here we need to verify the payment was made to PayPal before marking
+	// the order as paid
 	const { verified, value } = await verifyPayPalPayment(req.body.id);
 	if (!verified) throw new Error('Payment not verified');
 
@@ -115,7 +122,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update order to delivered
-// @route   PUT /api/orders/:id/deliver
+// @route   GET /api/orders/:id/deliver
 // @access  Private/Admin
 const updateOrderToDelivered = asyncHandler(async (req, res) => {
 	const order = await Order.findById(req.params.id);
@@ -125,10 +132,11 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 		order.deliveredAt = Date.now();
 
 		const updatedOrder = await order.save();
-		res.status(200).json(updatedOrder);
+
+		res.json(updatedOrder);
 	} else {
 		res.status(404);
-		throw new Error('Order not found.');
+		throw new Error('Order not found');
 	}
 });
 
@@ -137,7 +145,7 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
 	const orders = await Order.find({}).populate('user', 'id name');
-	res.status(200).json(orders);
+	res.json(orders);
 });
 
 export {
