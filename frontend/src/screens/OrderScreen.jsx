@@ -58,11 +58,10 @@ const OrderScreen = () => {
 		}
 	}, [order, paypal, errorPayPal, loadingPayPal, paypalDispatch]);
 
-	//Handler for paypal buttons
 	function onApprove(data, actions) {
 		return actions.order.capture().then(async function (details) {
 			try {
-				await payOrder({ orderId, details }).unwrap();
+				await payOrder({ orderId, details }).unwrap(); // unwrap added
 				refetch();
 				toast.success('Order is Paid.');
 			} catch (err) {
@@ -70,10 +69,12 @@ const OrderScreen = () => {
 			}
 		});
 	}
+
 	//TESTING COMMENT OUT
 	//async function onApproveTest() {
 	//await payOrder({ orderId, details: { payer: {} } });
 	//refetch();
+
 	//toast.success('Payment successful.');
 	//}
 
@@ -86,31 +87,24 @@ const OrderScreen = () => {
 			.create({
 				purchase_units: [
 					{
-						amount: {
-							value: order.totalPrice,
-						},
+						amount: { value: order.totalPrice },
 					},
 				],
 			})
-			.then((orderId) => {
-				return orderId;
+			.then((orderID) => {
+				return orderID;
 			});
 	}
 
 	const deliverHandler = async () => {
-		try {
-			await deliverOrder(orderId);
-			refetch();
-			toast.success('Order delivered.');
-		} catch (err) {
-			toast.error(err?.data?.message || err.message);
-		}
+		await deliverOrder(orderId);
+		refetch();
 	};
 
 	return isLoading ? (
 		<Loader />
 	) : error ? (
-		<Message variant='danger'>{error?.data?.message || error.error}</Message>
+		<Message variant='danger'>{error.data.message || error.error}</Message>
 	) : (
 		<>
 			<h1>Order {order._id}</h1>
@@ -123,12 +117,14 @@ const OrderScreen = () => {
 								<strong>Name:</strong> {order.user.name}
 							</p>
 							<p>
-								<strong>Email:</strong> {order.user.email}
+								<strong>Email: </strong>{' '}
+								<a href={`mailto:${order.user.email}`}>{order.user.email}</a>
 							</p>
 							<p>
-								<strong>Address:</strong> {order.shippingAddress.address},{' '}
-								{order.shippingAddress.city}, {order.shippingAddress.postalCode}
-								, {order.shippingAddress.country}
+								<strong>Address:</strong>
+								{order.shippingAddress.address}, {order.shippingAddress.city}{' '}
+								{order.shippingAddress.postalCode},{' '}
+								{order.shippingAddress.country}
 							</p>
 							{order.isDelivered ? (
 								<Message variant='success'>
@@ -138,6 +134,7 @@ const OrderScreen = () => {
 								<Message variant='danger'>Not Delivered</Message>
 							)}
 						</ListGroup.Item>
+
 						<ListGroup.Item>
 							<h2>Payment Method</h2>
 							<p>
@@ -265,4 +262,5 @@ const OrderScreen = () => {
 		</>
 	);
 };
+
 export default OrderScreen;
