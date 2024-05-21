@@ -40,9 +40,9 @@ const OrderScreen = () => {
 
 	useEffect(() => {
 		if (!errorPayPal && !loadingPayPal && paypal.clientId) {
-			const loadPaypalScript = async () => {
+			const loadPaypalScript = () => {
 				paypalDispatch({
-					type: 'resetOption',
+					type: 'resetOptions',
 					value: {
 						'client-id': paypal.clientId,
 						currency: 'USD',
@@ -51,12 +51,10 @@ const OrderScreen = () => {
 				paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
 			};
 			if (order && !order.isPaid) {
-				if (!window.paypal) {
-					loadPaypalScript();
-				}
+				loadPaypalScript();
 			}
 		}
-	}, [order, paypal, errorPayPal, loadingPayPal, paypalDispatch]);
+	}, [errorPayPal, loadingPayPal, order, paypal, paypalDispatch]);
 
 	function onApprove(data, actions) {
 		return actions.order.capture().then(async function (details) {
